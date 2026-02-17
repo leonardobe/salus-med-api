@@ -2,16 +2,15 @@ package med.salus.api.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import med.salus.api.domain.valueobject.Specialty;
 
-@Entity(name = "Physician")
-@Table(name = "physicians")
+@Entity(name = "Patient")
+@Table(name = "patients")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Physician {
+public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +19,7 @@ public class Physician {
     private String name;
     private String email;
     private String phone;
-    private String medicalRegistration;
-
-    @Enumerated(EnumType.STRING)
-    private Specialty specialty;
+    private String cpf;
 
     private Address address;
 

@@ -1,10 +1,12 @@
 package med.salus.api.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import med.salus.api.domain.entity.Physician;
-import med.salus.api.dto.PhysicianInputDTO;
-import med.salus.api.dto.PhysicianListDTO;
-import med.salus.api.dto.PhysicianUpdateDTO;
+import med.salus.api.dto.request.PhysicianInputDTO;
+import med.salus.api.dto.request.PhysicianUpdateDTO;
+import med.salus.api.dto.response.PhysicianListDTO;
+import med.salus.api.dto.response.PhysicianResponseDTO;
 import med.salus.api.mapper.PhysicianMapper;
 import med.salus.api.repository.PhysiciansRepository;
 import org.springframework.data.domain.Page;
@@ -31,11 +33,13 @@ public class PhysicianService {
     }
 
     @Transactional
-    public void saveUpdatePhysician(PhysicianUpdateDTO dto) {
+    public PhysicianResponseDTO saveUpdatePhysician(PhysicianUpdateDTO dto) {
 
         var physician = repository.getReferenceById(dto.id());
 
         mapper.updateEntityFromDTO(dto, physician);
+
+        return mapper.toResponseDTO(physician);
     }
 
     public Page<PhysicianListDTO> listAllPhysicians(Pageable pp) {
@@ -51,5 +55,14 @@ public class PhysicianService {
         }
 
         physician.setActive(false);
+    }
+
+    public PhysicianResponseDTO physicianDetails(Long id) {
+        Physician physician =
+                repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Physician not found"));
+
+        mapper.toResponseDTO(physician);
+
+        return mapper.toResponseDTO(physician);
     }
 }

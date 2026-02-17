@@ -1,4 +1,4 @@
-package med.salus.api.dto;
+package med.salus.api.domain.valueobject;
 
 public enum Specialty {
     CARDIOLOGY,

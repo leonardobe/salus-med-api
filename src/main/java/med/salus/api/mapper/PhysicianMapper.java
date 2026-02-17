@@ -2,10 +2,12 @@ package med.salus.api.mapper;
 
 import med.salus.api.domain.entity.Address;
 import med.salus.api.domain.entity.Physician;
-import med.salus.api.dto.AddressDTO;
-import med.salus.api.dto.PhysicianInputDTO;
-import med.salus.api.dto.PhysicianListDTO;
-import med.salus.api.dto.PhysicianUpdateDTO;
+import med.salus.api.dto.request.AddressDTO;
+import med.salus.api.dto.request.PhysicianInputDTO;
+import med.salus.api.dto.request.PhysicianUpdateDTO;
+import med.salus.api.dto.response.AddressResponseDTO;
+import med.salus.api.dto.response.PhysicianListDTO;
+import med.salus.api.dto.response.PhysicianResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -91,5 +93,29 @@ public class PhysicianMapper {
         if (dto.postalCode() != null) {
             address.setPostalCode(dto.postalCode());
         }
+    }
+
+    public AddressResponseDTO toAddressResponseDTO(Address address) {
+        if (address == null) return null;
+
+        return new AddressResponseDTO(
+                address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
+                address.getNeighborhood(),
+                address.getCity(),
+                address.getState(),
+                address.getPostalCode());
+    }
+
+    public PhysicianResponseDTO toResponseDTO(Physician physician) {
+        return new PhysicianResponseDTO(
+                physician.getId(),
+                physician.getName(),
+                physician.getEmail(),
+                physician.getPhone(),
+                physician.getMedicalRegistration(),
+                physician.getSpecialty(),
+                toAddressResponseDTO(physician.getAddress()));
     }
 }

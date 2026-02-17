@@ -25,3 +25,12 @@ spring:
 
 springdoc:
   packages-to-scan: med.voll.api
+
+server:
+  error:
+    include-stacktrace: never
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET}
