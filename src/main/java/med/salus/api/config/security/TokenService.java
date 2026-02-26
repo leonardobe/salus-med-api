@@ -3,8 +3,11 @@ package med.salus.api.config.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import med.salus.api.domain.entity.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,7 +30,8 @@ public class TokenService {
                     .withExpiresAt(Instant.now().plus(EXPIRATION_TIME, ChronoUnit.HOURS))
                     .sign(algorithm);
         } catch (JWTCreationException e) {
-            throw new RuntimeException("Authentication service error: Could not generate security token.", e);
+            throw new AuthenticationServiceException(
+                    "Authentication service error: Could not generate security token.", e);
         }
     }
 
@@ -39,8 +43,8 @@ public class TokenService {
                     .build()
                     .verify(token)
                     .getSubject();
-        } catch (JWTCreationException e) {
-            throw new RuntimeException("Token validation failed: Invalid or expired token.", e);
+        } catch (JWTVerificationException e) {
+            throw new BadCredentialsException("Token validation failed: Invalid or expired token.", e);
         }
     }
 }

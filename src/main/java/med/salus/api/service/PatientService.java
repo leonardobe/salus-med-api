@@ -1,12 +1,12 @@
 package med.salus.api.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import med.salus.api.domain.entity.Patient;
 import med.salus.api.dto.request.PatientInputDTO;
 import med.salus.api.dto.request.PatientUpdateDTO;
 import med.salus.api.dto.response.PatientListDTO;
 import med.salus.api.dto.response.PatientResponseDTO;
+import med.salus.api.exception.ResourceNotFoundException;
 import med.salus.api.mapper.PatientMapper;
 import med.salus.api.repository.PatientRepository;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ public class PatientService {
     }
 
     @Transactional
-    public Patient savePhysician(PatientInputDTO dto) {
+    public Patient savePatient(PatientInputDTO dto) {
 
         Patient patient = mapper.toEntityFromCreateDTO(dto);
 
@@ -59,10 +59,21 @@ public class PatientService {
 
     public PatientResponseDTO patientDetails(Long id) {
         Patient patient =
-                repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Physician not found"));
+                repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Physician not found"));
 
         mapper.toResponseDTO(patient);
 
         return mapper.toResponseDTO(patient);
+    }
+
+    public Patient findPatientById(Long id) {
+
+        return repository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient with id " + id + " not found"));
+    }
+
+    public Boolean isActivePatient(Long id) {
+        return repository.isActivePatient(id);
     }
 }

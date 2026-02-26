@@ -1,6 +1,7 @@
 package med.salus.api.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import med.salus.api.dto.error.ApiError;
 import med.salus.api.dto.error.ApiErrorResponse;
 import med.salus.api.dto.error.ApiErrorValidation;
@@ -14,17 +15,88 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiError> handleBusinessException(BusinessException ex, HttpServletRequest request) {
+
+        HttpStatus errorType = HttpStatus.BAD_REQUEST;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflictException(ConflictException ex, HttpServletRequest request) {
+
+        HttpStatus errorType = HttpStatus.CONFLICT;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(errorType).body(error);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleResourceNotFoundException(
+            ResourceNotFoundException ex, HttpServletRequest request) {
+
+        HttpStatus errorType = HttpStatus.NOT_FOUND;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(errorType).body(error);
+    }
+
+    @ExceptionHandler(UnprocessableEntityException.class)
+    public ResponseEntity<ApiError> handleUnprocessableEntityException(
+            UnprocessableEntityException ex, HttpServletRequest request) {
+
+        HttpStatus errorType = HttpStatus.UNPROCESSABLE_CONTENT;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.unprocessableContent().body(error);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException ex) {
+    public ResponseEntity<ApiError> handleEntityNotFoundException(
+            EntityNotFoundException ex, HttpServletRequest request) {
 
-        ApiError error = new ApiError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        HttpStatus errorType = HttpStatus.NOT_FOUND;
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(errorType).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -40,27 +112,76 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body("Invalid request body");
+    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex, HttpServletRequest request) {
+
+        HttpStatus errorType = HttpStatus.BAD_REQUEST;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                "Invalid request body",
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity handleBadCredentialsException(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credentials are invalid");
+    public ResponseEntity<ApiError> handleBadCredentialsException(
+            BadCredentialsException ex, HttpServletRequest request) {
+        HttpStatus errorType = HttpStatus.UNAUTHORIZED;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                "Credentials are invalid",
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(errorType).body(error);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity handleAuthenticationException(AuthenticationException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to authenticate");
+    public ResponseEntity<ApiError> handleAuthenticationException(
+            AuthenticationException ex, HttpServletRequest request) {
+        HttpStatus errorType = HttpStatus.UNAUTHORIZED;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                "Failed to authenticate",
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(errorType).body(error);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity handleAccessDeniedException(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+    public ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        HttpStatus errorType = HttpStatus.FORBIDDEN;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                "Access denied",
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(errorType).body(error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+    public ResponseEntity<ApiError> handleException(Exception ex, HttpServletRequest request) {
+        HttpStatus errorType = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        ApiError error = new ApiError(
+                errorType.value(),
+                errorType.getReasonPhrase(),
+                "Internal Server Error",
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(errorType).body(error);
     }
 }

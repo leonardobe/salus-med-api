@@ -1,5 +1,8 @@
 package med.salus.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import med.salus.api.domain.entity.Physician;
 import med.salus.api.dto.request.PhysicianInputDTO;
@@ -15,8 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Tag(name = "Physicians", description = "Endpoints for physicians")
 @RestController
 @RequestMapping("physicians")
+@SecurityRequirement(name = "bearer-key")
 public class PhysicianController {
 
     private final PhysicianService service;
@@ -27,6 +32,7 @@ public class PhysicianController {
         this.mapper = mapper;
     }
 
+    @Operation(summary = "Register a new physician")
     @PostMapping()
     public ResponseEntity<PhysicianResponseDTO> registration(
             @RequestBody @Valid PhysicianInputDTO dto, UriComponentsBuilder builder) {

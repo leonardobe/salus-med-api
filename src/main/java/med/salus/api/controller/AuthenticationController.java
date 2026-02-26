@@ -1,5 +1,7 @@
 package med.salus.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import med.salus.api.config.security.TokenService;
 import med.salus.api.domain.entity.User;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/login")
+@Tag(name = "Authentication", description = "Authentication and authorization endpoints")
 public class AuthenticationController {
 
     private final AuthenticationManager manager;
@@ -26,8 +29,15 @@ public class AuthenticationController {
     }
 
     @PostMapping()
-    public ResponseEntity signIn(@RequestBody @Valid AuthenticationInputDTO dto) {
+    @Operation(
+            summary = "Authenticate user",
+            description =
+                    "Authenticates a user using username and password credentials. Returns a JWT token that must be"
+                            + " used in the Authorization header as a Bearer token to access protected endpoints.")
+    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody @Valid AuthenticationInputDTO dto) {
+
         var authenticationToken = new UsernamePasswordAuthenticationToken(dto.username(), dto.password());
+
         var authentication = manager.authenticate(authenticationToken);
 
         var tokenJwt = tokenService.generateToken((User) authentication.getPrincipal());
